@@ -1,0 +1,63 @@
+{
+  "name": "Provision CRM User",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "provision-user",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT, role TEXT, status TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);"
+      },
+      "name": "Ensure Table Exists",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Postgres Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO users (name, role, status) VALUES ('{{$json[\"body\"][\"name\"]}}', '{{$json[\"body\"][\"role\"]}}', 'Active') RETURNING *;"
+      },
+      "name": "Create User in DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Postgres Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "✅ User Created: {{$json[\"name\"]}} (Role: {{$json[\"role\"]}})"
+      },
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [700, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": { "main": [[{ "node": "Ensure Table Exists", "type": "main", "index": 0 }]] },
+    "Ensure Table Exists": { "main": [[{ "node": "Create User in DB", "type": "main", "index": 0 }]] },
+    "Create User in DB": { "main": [[{ "node": "Response", "type": "main", "index": 0 }]] }
+  }
+}

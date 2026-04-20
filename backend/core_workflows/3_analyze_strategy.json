@@ -1,0 +1,43 @@
+{
+  "name": "Analyze Competitor Strategy",
+  "nodes": [
+    {
+      "parameters": { "path": "analyze-strategy" },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM customers LIMIT 5;"
+      },
+      "name": "Get Customer Context",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "credentials": {
+        "postgres": { "id": "1", "name": "Postgres Local" }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": [
+          { "role": "system", "content": "Analyze the following customer data and suggest a strategy." },
+          { "role": "user", "content": "Customers: {{$json}}" }
+        ]
+      },
+      "name": "Generate Strategy",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "credentials": { "openAiApi": { "id": "openai_credential", "name": "OpenAI API" } }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": { "main": [[{ "node": "Get Customer Context", "type": "main", "index": 0 }]] },
+    "Get Customer Context": { "main": [[{ "node": "Generate Strategy", "type": "main", "index": 0 }]] }
+  }
+}

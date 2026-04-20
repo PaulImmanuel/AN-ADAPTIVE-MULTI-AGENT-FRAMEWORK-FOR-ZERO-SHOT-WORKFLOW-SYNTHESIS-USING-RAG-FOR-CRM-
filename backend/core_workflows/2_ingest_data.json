@@ -1,0 +1,62 @@
+{
+  "name": "Ingest Customer Data",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ingest-data",
+        "responseMode": "lastNode"
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS customers (id SERIAL PRIMARY KEY, company_name TEXT, industry TEXT, value INT);"
+      },
+      "name": "Create Customer Table",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [300, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Postgres Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO customers (company_name, industry, value) VALUES ('Acme Corp', 'Tech', 50000), ('Global Industries', 'Manufacturing', 120000) RETURNING *;"
+      },
+      "name": "Simulate CSV Load",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Postgres Local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "✅ Data Ingested Successfully. 2 Records added to 'customers' table."
+      },
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [700, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": { "main": [[{ "node": "Create Customer Table", "type": "main", "index": 0 }]] },
+    "Create Customer Table": { "main": [[{ "node": "Simulate CSV Load", "type": "main", "index": 0 }]] },
+    "Simulate CSV Load": { "main": [[{ "node": "Response", "type": "main", "index": 0 }]] }
+  }
+}

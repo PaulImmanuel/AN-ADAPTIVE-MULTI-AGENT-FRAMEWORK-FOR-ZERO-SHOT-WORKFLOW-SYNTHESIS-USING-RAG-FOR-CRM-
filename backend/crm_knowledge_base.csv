@@ -1,0 +1,12 @@
+industry,widget_type,recommendation,example_data
+SaaS,metrics,"For SaaS, it's crucial to track user engagement and subscription growth. Key metrics are Monthly Recurring Revenue (MRR), Churn Rate, and Customer Lifetime Value (CLV).","MRR,Churn Rate,CLV"
+SaaS,kanban,"A SaaS sales pipeline often includes a trial or activation stage to monitor user adoption before purchase.","Lead > Trial Started > Activated > Subscribed > Canceled"
+SaaS,table,"Managing trial users and active subscribers is key. Important fields include Trial End Date, Plan Type, and Health Score.","Name,Company,Email,Plan Type,Trial End Date,Health Score"
+Real Estate,kanban,"The property sales cycle is distinct. Stages should represent the journey from initial contact to closing the deal.","Inquiry > Viewing Scheduled > Offer Made > Under Contract > Closed"
+Real Estate,table,"Managing both properties and clients is essential. Property Address and Client Budget are critical fields.","Client Name,Phone,Email,Budget,Property Address,Status"
+Customer Support,metrics,"To get a clear overview of your support operations, you need a status chart that tracks open, pending, and closed tickets.","StatusChart"
+Customer Support,table,"To monitor your team's immediate workload, it is essential to have a table showing the most recent incoming tickets.","RecentTicketsTable"
+SaaS,metrics,"For SaaS businesses, high-level financial health and user growth are critical. Use a metric card to display Revenue, Growth, and Churn.","MetricCard"
+Real Estate,metrics,"Real Estate needs to track inventory health. Display New Listings, Days on Market, and Closing Rate using a metric card.","MetricCard"
+Real Estate,chart,"Track the source of leads (Zillow, Ads, Referrals) using a bar chart.","LeadsBarChart"
+Real Estate,table,"Keep a list of recent property inquiries and client requests.","RecentTicketsTable"
