@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. The Real Database (PostgreSQL)
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_USER=changeUser
+      - POSTGRES_PASSWORD=changePassword
+      - POSTGRES_DB=n8n
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_storage:/var/lib/postgresql/data
+
+  # 2. The Automation Engine (n8n)
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=changeUser
+      - DB_POSTGRESDB_PASSWORD=changePassword
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=password
+      # This allows n8n to accept webhooks from your local machine
+      - WEBHOOK_URL=http://localhost:5678/
+    links:
+      - postgres
+    volumes:
+      - n8n_storage:/home/node/.n8n
+
+volumes:
+  db_storage:
+  n8n_storage:
